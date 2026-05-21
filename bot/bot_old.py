@@ -2,6 +2,7 @@ import asyncio
 import aiosqlite
 from datetime import datetime
 from aiogram import Bot, Dispatcher, Router, F
+from aiogram.utils.markdown import hlink
 from aiogram.types import Message, CallbackQuery, InlineKeyboardMarkup, InlineKeyboardButton
 from aiogram.filters import CommandStart, Command
 from aiogram.fsm.context import FSMContext
@@ -72,6 +73,7 @@ def main_keyboard() -> InlineKeyboardMarkup:
         [InlineKeyboardButton(text="ℹ️ О нас", callback_data="about")],
         [InlineKeyboardButton(text="🎯 Наша задача", callback_data="mission")],
         [InlineKeyboardButton(text="📞 Связаться с оператором линии", callback_data="contact")],
+        [InlineKeyboardButton(text="🌐 Посетить сайт", callback_data="page")]
     ])
 
 
@@ -130,6 +132,10 @@ CONTACT_TEXT = (
     "🕐 Мы стараемся отвечать как можно скорее."
 )
 
+PAGE_TEXT = (
+    hlink("🔗 Нажмите, чтобы пройти по ссылке", "https://cblago.ru/")
+)
+
 ADMIN_PANEL_TEXT = (
     "🔐 <b>Панель администратора</b>\n\n"
     "Добро пожаловать, администратор!\n"
@@ -180,6 +186,17 @@ async def handle_mission(callback: CallbackQuery):
         parse_mode="HTML"
     )
     await callback.answer()
+
+
+@router.callback_query(F.data == "page")
+async def handle_mission(callback: CallbackQuery):
+    await callback.message.edit_text(
+        text=PAGE_TEXT,
+        reply_markup=back_keyboard(),
+        parse_mode="HTML"
+    )
+    await callback.answer()
+
 
 
 @router.callback_query(F.data == "contact")
